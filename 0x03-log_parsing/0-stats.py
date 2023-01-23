@@ -1,33 +1,39 @@
 #!/usr/bin/python3
-'''a script that reads stdin line by line and computes metrics'''
-
+"""
+Log parsing
+"""
 
 import sys
 
-# Initialize variables to store metrics
-total_size = 0
-status_codes = {200: 0, 301: 0, 400: 0, 401: 0,
-                403: 0, 404: 0, 405: 0, 500: 0}
-line_count = 0
+if __name__ == '__main__':
 
+    filesize, count = 0, 0
+    codes = ["200", "301", "400", "401", "403", "404", "405", "500"]
+    stats = {k: 0 for k in codes}
 
-# Read input line by line
-for line in sys.stdin:
-    # Check if line matches the specified format
-    parts = line.split()
-    if len(parts) != 6:
-        continue
-    ip, date, request, status, code, size = parts
-    status_code = int(code)
-    # Check if status code is in the list of possible codes
-    if status_code not in status_codes:
-        continue
-    # Update metrics
-    total_size += int(size)
-    status_codes[status_code] += 1
-    line_count += 1
-    # Print metrics every 10 lines
-    if line_count % 10 == 0:
-        print("Total file size: ", total_size)
-        for code in sorted(status_codes):
-            print(f"{code}: {status_codes[code]}")
+    def print_stats(stats: dict, file_size: int) -> None:
+        print("File size: {:d}".format(filesize))
+        for k, v in sorted(stats.items()):
+            if v:
+                print("{}: {}".format(k, v))
+
+    try:
+        for line in sys.stdin:
+            count += 1
+            data = line.split()
+            try:
+                status_code = data[-2]
+                if status_code in stats:
+                    stats[status_code] += 1
+            except BaseException:
+                pass
+            try:
+                filesize += int(data[-1])
+            except BaseException:
+                pass
+            if count % 10 == 0:
+                print_stats(stats, filesize)
+        print_stats(stats, filesize)
+    except KeyboardInterrupt:
+        print_stats(stats, filesize)
+        raise
