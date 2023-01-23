@@ -12,4 +12,3 @@ for i in range(10000):
         random.choice([200, 301, 400, 401, 403, 404, 405, 500]),
         random.randint(1, 1024)
     ))
-    sys.stdout.flush()
