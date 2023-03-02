@@ -1,39 +1,25 @@
 #!/usr/bin/python3
+"""Island perimeter computing module.
 """
-Contains a method that returns the perimeter of the
-island described in grid
-"""
-
-
-def check_perimeter(grid, i, j):
-    """
-    check surroundings for water. If water body
-    on boundary, add 1 to perimeter otherwise add 0
-    """
-    mask = 1
-    top = grid[i - 1][j] ^ mask if i > 0 else 1
-    bottom = grid[i + 1][j] ^ mask if i < (len(grid) - 1) else 1
-    left = grid[i][j - 1] ^ mask if j > 0 else 1
-    right = grid[i][j + 1] ^ mask if j < (len(grid[i]) - 1) else 1
-    positions = top + bottom + right + left
-    return positions
 
 
 def island_perimeter(grid):
-    """
-    Calculates the perimeter of an island given a grid
-
-    Args:
-        grid (list): list of lists of integers
-
-    Returns:
-        int: perimeter of island
+    """Computes the perimeter of an island with no lakes.
     """
     perimeter = 0
-    for i in range(len(grid)):
-        for j in range(len(grid[i])):
-            if grid[i][j] == 1:
-                perimeter += check_perimeter(grid, i, j)
-
+    if type(grid) != list:
+        return 0
+    n = len(grid)
+    for i, row in enumerate(grid):
+        m = len(row)
+        for j, cell in enumerate(row):
+            if cell == 0:
+                continue
+            edges = (
+                i == 0 or (len(grid[i - 1]) > j and grid[i - 1][j] == 0),
+                j == m - 1 or (m > j + 1 and row[j + 1] == 0),
+                i == n - 1 or (len(grid[i + 1]) > j and grid[i + 1][j] == 0),
+                j == 0 or row[j - 1] == 0,
+            )
+            perimeter += sum(edges)
     return perimeter
-
